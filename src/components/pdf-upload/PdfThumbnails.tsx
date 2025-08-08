@@ -3,6 +3,7 @@
 
 import { useEffect, useState, ReactNode } from 'react';
 import { usePdf } from '@/app/contexts/PdfContext';
+import Loader from '../shared/Loader';
 
 // 1. Definimos el tipo para la nueva prop
 type RenderActionFunc = (pageNumber: number) => ReactNode;
@@ -13,10 +14,8 @@ interface PdfThumbnailsProps {
 }
 
 export default function PdfThumbnails({ renderAction }: PdfThumbnailsProps) {
-  const { currentFile, setPageCount } = usePdf();
-  const [isLoading, setIsLoading] = useState(false);
+  const { currentFile, setPageCount, pdfIsLoading, setPdfIsLoading, } = usePdf();
   const [error, setError] = useState<string | null>(null);
-  // El estado de las páginas ahora es local a este componente
   const [localPages, setLocalPages] = useState<{ pageNumber: number, imageUrl: string }[]>([]);
 
   useEffect(() => {
@@ -27,7 +26,7 @@ export default function PdfThumbnails({ renderAction }: PdfThumbnailsProps) {
     }
 
     const generateThumbnails = async () => {
-      setIsLoading(true);
+      setPdfIsLoading(true);
       setError(null);
       const formData = new FormData();
       formData.append('file', currentFile);
@@ -55,19 +54,19 @@ export default function PdfThumbnails({ renderAction }: PdfThumbnailsProps) {
         console.error(err);
         setError('No se pudieron generar las vistas previas.');
       } finally {
-        setIsLoading(false);
+        setPdfIsLoading(false);
       }
     };
 
     generateThumbnails();
-  }, [currentFile, setPageCount]);
+  }, [currentFile, setPageCount, setPdfIsLoading]);
 
-  if (isLoading) return <div className="text-center py-8">Generando vistas previas...</div>;
+  if (pdfIsLoading) return <Loader text="Generando miniaturas..." />;
   if (error) return <div className="text-center py-8 text-red-500">{error}</div>;
   if (localPages.length === 0) return <div className="text-center py-8">No hay páginas para mostrar.</div>;
 
   return (
-    <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-3 md:grid-cols-4 gap-4 p-4">
       {localPages.map((page) => (
         // 3. Cada miniatura es un contenedor relativo
         <div key={page.pageNumber} className="relative flex flex-col border border-gray-200 rounded-lg overflow-hidden transition-all hover:scale-102">

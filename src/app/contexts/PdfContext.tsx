@@ -7,8 +7,6 @@ import { createContext, useContext, ReactNode, useState } from 'react';
 export interface PdfPage {
   pageNumber: number;
   imageUrl: string;
-  // width y height ya no son necesarios si las imágenes son solo URLs del backend,
-  // pero los dejamos por si los usas para algo más.
   width?: number;
   height?: number;
 }
@@ -18,6 +16,8 @@ interface PdfContextType {
   currentFile: File | null;
   pages: PdfPage[]; // Este estado puede que ya no lo uses, pero lo dejamos.
   pageCount: number; // Número total de páginas del PDF.
+  pdfIsLoading: boolean; // Indica si el PDF está cargando.
+  setPdfIsLoading: (isLoading: boolean) => void; // Función para actualizar el estado de carga del PDF.
   setCurrentFile: (file: File | null) => void;
   setPages: (pages: PdfPage[]) => void; // Puede que ya no lo uses.
   setPageCount: (count: number) => void; // Función para actualizar el conteo.
@@ -30,7 +30,8 @@ export function PdfProvider({ children }: { children: ReactNode }) {
   const [currentFile, setCurrentFile] = useState<File | null>(null);
   const [pages, setPages] = useState<PdfPage[]>([]);
   const [pageCount, setPageCount] = useState<number>(0);
-  
+  const [pdfIsLoading, setPdfIsLoading] = useState<boolean>(false);
+
   const clearPdf = () => {
     setPages([]);
     setCurrentFile(null);
@@ -41,6 +42,8 @@ export function PdfProvider({ children }: { children: ReactNode }) {
     currentFile,
     pages,
     pageCount,
+    pdfIsLoading,
+    setPdfIsLoading,
     setCurrentFile,
     setPages,
     setPageCount,

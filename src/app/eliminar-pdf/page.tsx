@@ -22,8 +22,9 @@ export const metadata: Metadata = {
 export default function EliminarPdfPage() {
   return (
     // Renderizamos el layout estático que los bots de Google verán
-    <main className="container mx-auto p-4 md:p-8">
-      <div className="max-w-xl mx-auto text-center mb-8">
+    <main className="max-w-screen-xl mx-auto p-6">
+
+      <div className="mx-auto text-center mb-16 mt-24">
         <h1 className="text-3xl font-bold">
           Eliminar Páginas de un PDF
         </h1>

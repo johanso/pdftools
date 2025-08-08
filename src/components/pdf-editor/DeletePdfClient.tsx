@@ -139,9 +139,11 @@ export default function DeletePdfClient() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto grid md:grid-cols-6 gap-8">
-      <section className="col-span-4 bg-gray-50 rounded-lg p-4 mb-20">
-        <PdfThumbnails renderAction={renderCheckboxAction} /> 
+    <div className="grid md:grid-cols-6 gap-8">
+      <section className="col-span-4 bg-gray-50 rounded-lg mb-20 relative">
+        <PdfThumbnails 
+          renderAction={renderCheckboxAction} 
+        /> 
       </section>
 
       <ToolSidebar 
