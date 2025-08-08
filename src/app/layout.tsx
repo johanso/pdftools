@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { PdfProvider } from "./contexts/PdfContext";
+import { DownloadDialogProvider } from "./contexts/DownloadDialogContext";
+import DownloadDialog from "@/components/shared/DownloadDialog";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +31,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <PdfProvider>
-          {children}
+          <DownloadDialogProvider> {/* Envolvemos con el nuevo provider */}
+            {children}
+            <DownloadDialog /> {/* Renderizamos el diálogo aquí, fuera del contenido principal */}
+          </DownloadDialogProvider>
         </PdfProvider>
       </body>
     </html>

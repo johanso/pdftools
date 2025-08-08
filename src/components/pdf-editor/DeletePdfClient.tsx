@@ -1,4 +1,3 @@
-// src/components/pdf-editor/DeletePdfClient.tsx
 'use client';
 
 import { useState } from 'react';
@@ -7,16 +6,16 @@ import { Dropzone } from '@/components/pdf-upload/dropzone';
 import PdfThumbnails from '@/components/pdf-upload/PdfThumbnails';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CheckSquare, Trash2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import ToolSidebar from '../shared/ToolSidebar';
+import { useDownloadDialog } from '@/app/contexts/DownloadDialogContext';
 
-// Renombramos el componente
 export default function DeletePdfClient() { 
   const { currentFile, setCurrentFile } = usePdf();
+  const { openDialog } = useDownloadDialog();
   const [selectedPages, setSelectedPages] = useState(new Set<number>());
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // ... (TODA la lógica de togglePageSelection y handleDelete se queda aquí sin cambios)
   const togglePageSelection = (pageNumber: number) => {
     setSelectedPages(prev => {
       const newSelection = new Set(prev);
@@ -29,12 +28,9 @@ export default function DeletePdfClient() {
     });
   };
 
-  const handleDelete = async () => {
-    if (selectedPages.size === 0 || !currentFile) {
-      alert('Por favor, selecciona al menos una página para eliminar.');
-      return;
-    }
-    
+  const startPdfProcessing = async (downloadFileName: string) => {
+    if (!currentFile) return;
+
     setIsProcessing(true);
     const formData = new FormData();
     formData.append('file', currentFile);
@@ -51,7 +47,7 @@ export default function DeletePdfClient() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'documento_modificado.pdf';
+      a.download = downloadFileName;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -83,7 +79,15 @@ export default function DeletePdfClient() {
     const sortedPages = Array.from(selectedPages).sort((a, b) => a - b);
     return sortedPages.join(', ');
   };
-  
+
+  const handleDeleteClick = () => {
+    if (selectedPages.size === 0) {
+      alert('Por favor, selecciona al menos una página para eliminar.');
+      return;
+    }
+    // Abrimos el diálogo y le pasamos la función que debe ejecutar al confirmar
+    openDialog(startPdfProcessing, 'documento_sin_paginas'); 
+  };
 
   const deleteToolInfo = (
     <div>
@@ -108,7 +112,7 @@ export default function DeletePdfClient() {
 
   const deleteActionButton = (
     <Button
-      onClick={handleDelete}
+    onClick={handleDeleteClick}
       disabled={selectedPages.size === 0 || isProcessing}
       className="gap-2 h-12 w-full text-md font-bold"
       size="lg"
