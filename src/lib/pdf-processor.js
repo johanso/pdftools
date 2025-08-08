@@ -2,6 +2,8 @@
 const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
 const { createCanvas } = require('canvas');
 
+console.log(pdfjsLib);
+
 // Configuración específica para Node.js
 if (typeof window === 'undefined') {
   // Mock de Web Worker
@@ -52,7 +54,7 @@ async function generatePdfThumbnails(fileBuffer) {
     console.log(`PDF cargado. Número de páginas: ${pdf.numPages}`);
     const thumbnails = [];
     const SCALE = 1.0;
-    const MAX_PAGES = 5;
+    const MAX_PAGES = 100;
 
     for (let i = 1; i <= Math.min(pdf.numPages, MAX_PAGES); i++) {
       console.log(`Procesando página ${i}...`);
@@ -60,16 +62,19 @@ async function generatePdfThumbnails(fileBuffer) {
       const viewport = page.getViewport({ scale: SCALE });
       const canvas = createCanvas(viewport.width, viewport.height);
       const context = canvas.getContext('2d');
+
+      context.fillStyle = '#FFFFFF';
+      context.fillRect(0, 0, canvas.width, canvas.height);
       
       await page.render({
         canvasContext: context,
         viewport: viewport,
+        background: 'rgba(0,0,0,0)',
         enableWebGL: false,
         renderInteractiveForms: false,
-        background: 'rgba(0,0,0,0)'
       }).promise;
 
-      thumbnails.push(canvas.toDataURL('image/jpeg', 0.8));
+      thumbnails.push(canvas.toDataURL('image/png'));
       console.log(`Página ${i} procesada.`);
     }
 

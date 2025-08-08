@@ -1,6 +1,6 @@
 // src/app/api/generate-thumbnails/route.ts
 import { NextResponse } from 'next/server';
-const { generatePdfThumbnails } = require('../../../lib/pdf-processor');
+import { generatePdfThumbnails } from '../../../lib/pdf-processor';
 
 export async function POST(request: Request) {
   try {
@@ -17,7 +17,9 @@ export async function POST(request: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const result = await generatePdfThumbnails(Buffer.from(arrayBuffer));
 
-    return NextResponse.json(result);
+    return NextResponse.json({
+      ...result,
+    });
 
   } catch (error: any) {
     console.error('Error en la API Route:', error);

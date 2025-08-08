@@ -1,6 +1,6 @@
 'use client';
 
-import PdfUploadContainer from "./components/pdf-upload/PdfUploadContainer";
+import PdfUploadContainer from "../components/pdf-upload/PdfUploadContainer";
 
 
 export default function Home() {

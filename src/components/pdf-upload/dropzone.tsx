@@ -22,7 +22,7 @@ export function Dropzone({
   accept = {
     'application/pdf': ['.pdf'],
   },
-  maxSize = 5 * 1024 * 1024, // 5MB
+  maxSize = 10 * 1024 * 1024, // 10MB
   maxFiles = 1,
   ...props
 }: DropzoneProps) {

@@ -1,18 +1,13 @@
 // src/components/pdf-upload/PdfUploadContainer.tsx
 'use client';
-
-import { Upload } from 'lucide-react';
-import PdfThumbnails from './PdfThumbnails';
-import { Dropzone } from './dropzone';
-import { Button } from '../ui/button';
+import React from 'react';
 import { usePdf } from '@/app/contexts/PdfContext';
+import PdfThumbnails from '@/components/pdf-upload/PdfThumbnails';
+import DropzoneInfoFile from '@/components/pdf-upload/dropzoneInfoFile';
+import { Dropzone } from '@/components/pdf-upload/dropzone';
 
 export default function PdfUploadContainer() {
-  const { currentFile, clearPdf, setCurrentFile } = usePdf();
-
-  const handleNewUpload = () => {
-    clearPdf();
-  };
+  const { currentFile, pageCount, setCurrentFile } = usePdf();
 
   const handleFileAccepted = (file: File) => {
     setCurrentFile(file);
@@ -22,17 +17,8 @@ export default function PdfUploadContainer() {
     return (
       <div className="w-full max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Vista previa del PDF</h2>
-          <Button 
-            variant="outline" 
-            onClick={handleNewUpload}
-            className="flex items-center gap-2"
-          >
-            <Upload className="h-4 w-4" />
-            Subir otro archivo
-          </Button>
+          <DropzoneInfoFile uploadedFile={currentFile} pageCount={pageCount} />
         </div>
-        {/* PdfThumbnails ahora se encarga de llamar al backend */}
         <PdfThumbnails />
       </div>
     );
