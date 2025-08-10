@@ -14,17 +14,20 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Dropzone } from '@/components/pdf-upload/dropzone';
 import { Button } from '@/components/ui/button';
-import { Combine, Files, Plus } from 'lucide-react';
+import { AArrowDown, AArrowUp, ArrowLeft, Combine, Files, Plus } from 'lucide-react';
 import ToolSidebar from '@/components/shared/ToolSidebar';
 import { formatFileSize } from '@/lib/utils';
 import { usePdfActions } from '@/app/hooks/usePdfActions';
 import DraggableFileGrid, { PdfFileWithPreview } from '../pdf-upload/draggableFileGrid';
+import ToolHeader, { ActionConfig } from '../shared/ToolHeader';
+import { usePdf } from '@/app/contexts/PdfContext';
 
 export default function MergePdfClient() {
+  const { clearPdf } = usePdf();
   const { isProcessing, openMergeDialog } = usePdfActions();
   const [files, setFiles] = useState<PdfFileWithPreview[]>([]);
   const [fileToDeleteId, setFileToDeleteId] = useState<string | null>(null);
-
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); 
 
   const totalSize = files.reduce((acc, file) => acc + file.size, 0);
   const totalFiles = files.length;
@@ -130,8 +133,26 @@ export default function MergePdfClient() {
     openMergeDialog(files);
   };
 
+  const handleSort = () => {
+    const sortedFiles = [...files].sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return a.name.localeCompare(b.name);
+      } else {
+        return b.name.localeCompare(a.name);
+      }
+    });
+
+    setFiles(sortedFiles); 
+    setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc')); 
+  };
+
+  const handleClearAll = () => {
+    setFiles([]); 
+    clearPdf();   
+  };
+
   const mergeToolInfo = (
-    <div className="text-sm">
+    <div className="text-sm border-t pt-4">
       <p className="text-gray-500">
         Has cargado <span className="font-bold">{files.length}</span> archivo(s).
         Arrastra y suelta para cambiar el orden en que se unirán.
@@ -156,10 +177,6 @@ export default function MergePdfClient() {
         <Files className="h-5 w-5" /> Resumen de Archivos
       </h3>
       <div className="space-y-2 text-sm text-gray-700">
-        <div className="flex justify-between">
-          <span className="font-medium text-gray-500">Archivos a unir:</span>
-          <span className="text-gray-700">{totalFiles}</span>
-        </div>
         <div className="flex justify-between">
           <span className="font-medium text-gray-500">Tamaño total:</span>
           <span className="text-gray-700">{formatFileSize(totalSize)}</span>
@@ -186,10 +203,33 @@ export default function MergePdfClient() {
     );
   }
 
+  const toolbarActions: ActionConfig[] = [
+    {
+      id: 'upload-new',
+      icon: <ArrowLeft style={{ width: '22px', height: '22px' }} />,
+      tooltip: 'Regresar',
+      onClick: handleClearAll,
+    },
+    {
+      id: 'sort-alpha',
+      icon: sortOrder === 'asc' ? 
+        <AArrowUp style={{ width: '26px', height: '26px' }} /> : 
+        <AArrowDown style={{ width: '26px', height: '26px' }} />,
+      tooltip: `Ordenar ${sortOrder === 'asc' ? 'A-Z' : 'Z-A'}`,
+      onClick: handleSort,
+      disabled: files.length < 2,
+    },
+  ];
+
   return (
     <>
       <div className="grid md:grid-cols-6 gap-8">
         <section className="col-span-4 rounded-lg mb-20 relative">
+
+          <ToolHeader 
+            title={`Archivos a unir: ${totalFiles}`}
+            actions={toolbarActions} 
+          />
           
           <DraggableFileGrid 
             files={files} 

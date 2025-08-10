@@ -26,7 +26,7 @@ export default function ToolSidebar({
 
   return (
     <aside 
-      className="md:col-start-5 md:col-span-2 h-fit fixed left-0 bottom-0 right-0 md:left-auto md:sticky md:top-32 md:p-0">
+      className="md:col-start-5 md:col-span-2 h-fit fixed left-0 bottom-0 right-0 md:left-auto md:sticky md:top-4 md:p-0">
       <div 
         onClick={() => setShowSidebar(!showSidebar)}
         className='md:hidden mx-auto w-12 h-8 bg-white rounded relative top-1 border border-gray-200 border-b-0 flex items-center justify-center cursor-pointer'>
@@ -40,7 +40,7 @@ export default function ToolSidebar({
       </div>
 
       <div className="bg-white border flex flex-col h-full rounded-xl">
-        <div className={"p-4 border-b" + (showSidebar ? ' block' : ' hidden') + " md:block"}>
+        <div className={"p-4 pb-0" + (showSidebar ? ' block' : ' hidden') + " md:block"}>
           
           {documentDetails ? (
             documentDetails

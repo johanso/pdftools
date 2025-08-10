@@ -16,6 +16,7 @@
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-navigation-menu": "^1.2.13",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.7",
     "@types/pdfjs-dist": "^2.10.378",
     "@types/react-dropzone": "^5.1.0",
     "canvas": "^2.11.2",

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function UnirPdfPage() {
   return (
     <main className="max-w-screen-xl mx-auto p-6">
-      <div className="mx-auto text-center mb-16 mt-24">
+      <div className="mx-auto text-center mb-10 md:mb-16 mt-6">
         <h1 className="text-3xl font-bold">
           Unir Archivos PDF 
         </h1>

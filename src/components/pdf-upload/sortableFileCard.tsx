@@ -56,7 +56,7 @@ export function SortableFileCard({ file, onRemoveFile }: { file: PdfFileWithPrev
         </button>
         
         <div 
-          className="flex-grow flex items-center justify-center max-h-[200px] bg-gray-100 cursor-grab active:cursor-grabbing touch-none"
+          className="flex-grow flex items-center justify-center h-[200px] max-h-[200px] bg-gray-100 cursor-grab active:cursor-grabbing touch-none"
           {...listeners}
         >
           {file.isLoading ? (

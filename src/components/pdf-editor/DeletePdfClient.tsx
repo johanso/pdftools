@@ -6,15 +6,15 @@ import { Dropzone } from '@/components/pdf-upload/dropzone';
 import PdfThumbnails from '@/components/pdf-upload/PdfThumbnails';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { CircleX } from 'lucide-react';
+import { CircleCheckBig, CircleX, Upload } from 'lucide-react';
 import ToolSidebar from '../shared/ToolSidebar';
 import { usePdfActions } from '@/app/hooks/usePdfActions';
+import ToolHeader, { ActionConfig } from '../shared/ToolHeader';
 
 export default function DeletePdfClient() { 
 
-  const { currentFile, setCurrentFile } = usePdf();
+  const { currentFile, pageCount, setCurrentFile, clearPdf } = usePdf();
   const { isProcessing, openDeleteDialog } = usePdfActions();
-
   const [selectedPages, setSelectedPages] = useState(new Set<number>());
 
   const togglePageSelection = (pageNumber: number) => {
@@ -41,14 +41,6 @@ export default function DeletePdfClient() {
     </div>
   );
 
-  const getSelectionSummaryText = (): string => {
-    if (selectedPages.size === 0) {
-      return 'Ninguna página seleccionada.';
-    }
-    const sortedPages = Array.from(selectedPages).sort((a, b) => a - b);
-    return sortedPages.join(', ');
-  };
-
   const handleDeleteClick = () => {
     if (selectedPages.size === 0 || !currentFile) {
       alert('Por favor, selecciona al menos una página para eliminar.');
@@ -63,23 +55,50 @@ export default function DeletePdfClient() {
     }
   };
 
+  const handleSelectAll = () => {
+    if (selectedPages.size === pageCount) {
+      setSelectedPages(new Set());
+    } else {
+      const allPageNumbers = Array.from({ length: pageCount }, (_, i) => i + 1);
+      setSelectedPages(new Set(allPageNumbers));
+    }
+  };
+
+  const handleClearSelection = () => {
+    setSelectedPages(new Set());
+  };
+
+  const toolbarActions: ActionConfig[] = [
+    {
+      id: 'upload-new',
+      icon: <Upload style={{ width: '22px', height: '22px' }} />,
+      tooltip: 'Subir un nuevo archivo',
+      onClick: clearPdf,
+      className: 'ml-auto',
+    },
+    {
+      id: 'select-all',
+      icon: <CircleCheckBig style={{ width: '22px', height: '22px' }} />,
+      tooltip: selectedPages.size === pageCount ? 'Deseleccionar todo' : 'Seleccionar todo',
+      onClick: handleSelectAll,
+    },
+    {
+      id: 'clear-selection',
+      icon: <CircleX style={{ width: '22px', height: '22px' }} />,
+      tooltip: 'Borrar selección',
+      onClick: handleClearSelection,
+      disabled: selectedPages.size === 0,
+      className: 'text-black',
+    },
+  ];
+
   const deleteToolInfo = (
     <div>
       <div className="text-sm">
-        <div>
-          <span className="text-gray-700">Páginas seleccionadas:</span>
-          <div className="my-2 md:my-4 text-gray-800 bg-gray-100 p-2 rounded-md max-h-24 overflow-y-auto text-center border">
-            <p className="break-words font-mono tracking-wider">
-              {getSelectionSummaryText()}
-            </p>
-          </div>
-        </div>
-        
         <div className="hidden md:flex justify-between items-center pt-2 md:pt-4 border-t">
           <span className="text-gray-700">Total de Páginas a eliminar:</span>
           <span className="font-bold text-lg">{selectedPages.size}</span>
         </div>
-
       </div>
     </div>
   );
@@ -110,6 +129,12 @@ export default function DeletePdfClient() {
   return (
     <div className="grid md:grid-cols-6 gap-8">
       <section className="col-span-4 bg-gray-50 rounded-lg mb-20 relative">
+        
+        <ToolHeader 
+          title={`${selectedPages.size} / ${pageCount} seleccionadas`}
+          actions={toolbarActions} 
+        />
+
         <PdfThumbnails 
           renderAction={renderCheckboxAction} 
         /> 
