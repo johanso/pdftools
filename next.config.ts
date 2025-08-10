@@ -26,10 +26,10 @@ const nextConfig = {
 
     return config;
   },
-  experimental: {
-    serverComponentsExternalPackages: ['canvas', 'pdfjs-dist'],
-  },
-  serverExternalPackages: ['canvas'],
+  // experimental: {
+  //   serverComponentsExternalPackages: ['canvas', 'pdfjs-dist'],
+  // },
+  serverExternalPackages: ['canvas', 'pdfjs-dist', 'pdfjs-dist/build/pdf.worker.js'],
   images: {
     disableStaticImages: true,
   },

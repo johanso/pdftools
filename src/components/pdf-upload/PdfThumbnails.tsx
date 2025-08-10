@@ -73,7 +73,7 @@ export default function PdfThumbnails({ renderAction }: PdfThumbnailsProps) {
           <img
             src={page.imageUrl}
             alt={`Página ${page.pageNumber}`}
-            className="w-full h-auto object-contain bg-white"
+            className="w-full h-auto max-h-[200px] object-contain bg-white"
           />
           <div className="p-2 bg-white text-center text-xs text-gray-500 border-t border-gray-200">
             Página {page.pageNumber}
