@@ -6,15 +6,16 @@ import { Dropzone } from '@/components/pdf-upload/dropzone';
 import PdfThumbnails from '@/components/pdf-upload/PdfThumbnails';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { CircleX } from 'lucide-react';
 import ToolSidebar from '../shared/ToolSidebar';
-import { useDownloadDialog } from '@/app/contexts/DownloadDialogContext';
+import { usePdfActions } from '@/app/hooks/usePdfActions';
 
 export default function DeletePdfClient() { 
+
   const { currentFile, setCurrentFile } = usePdf();
-  const { openDialog } = useDownloadDialog();
+  const { isProcessing, openDeleteDialog } = usePdfActions();
+
   const [selectedPages, setSelectedPages] = useState(new Set<number>());
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const togglePageSelection = (pageNumber: number) => {
     setSelectedPages(prev => {
@@ -26,38 +27,6 @@ export default function DeletePdfClient() {
       }
       return newSelection;
     });
-  };
-
-  const startPdfProcessing = async (downloadFileName: string) => {
-    if (!currentFile) return;
-
-    setIsProcessing(true);
-    const formData = new FormData();
-    formData.append('file', currentFile);
-    formData.append('pagesToDelete', Array.from(selectedPages).join(','));
-
-    try {
-      const response = await fetch('/api/delete-pages', {
-        method: 'POST',
-        body: formData,
-      });
-      if (!response.ok) throw new Error('La respuesta del servidor no fue exitosa.');
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = downloadFileName;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error al eliminar páginas:', error);
-      alert('Ocurrió un error al procesar el PDF.');
-    } finally {
-      setIsProcessing(false);
-    }
   };
 
   const renderCheckboxAction = (pageNumber: number) => (
@@ -81,12 +50,17 @@ export default function DeletePdfClient() {
   };
 
   const handleDeleteClick = () => {
-    if (selectedPages.size === 0) {
+    if (selectedPages.size === 0 || !currentFile) {
       alert('Por favor, selecciona al menos una página para eliminar.');
       return;
     }
-    // Abrimos el diálogo y le pasamos la función que debe ejecutar al confirmar
-    openDialog(startPdfProcessing, 'documento_sin_paginas'); 
+    openDeleteDialog(currentFile, selectedPages); 
+  };
+
+  const handleFileAccepted = (acceptedFiles: File[]) => {
+    if (acceptedFiles && acceptedFiles.length > 0) {
+      setCurrentFile(acceptedFiles[0]);
+    }
   };
 
   const deleteToolInfo = (
@@ -112,16 +86,12 @@ export default function DeletePdfClient() {
 
   const deleteActionButton = (
     <Button
-    onClick={handleDeleteClick}
+      onClick={handleDeleteClick}
       disabled={selectedPages.size === 0 || isProcessing}
       className="gap-2 h-12 w-full text-md font-bold"
       size="lg"
     >
-      {isProcessing ? 'Procesando...' : (
-        <>
-          Eliminar Páginas <ArrowRight className="h-5 w-5" />
-        </>
-      )}
+      {isProcessing ? 'Procesando...' : (<><CircleX className="h-5 w-5" /> Eliminar Páginas</>)}
     </Button>
   );
 
@@ -129,10 +99,9 @@ export default function DeletePdfClient() {
     return (
       <div className="max-w-xl mx-auto">
         <Dropzone 
-          onFileAccepted={setCurrentFile} 
+          onFileAccepted={handleFileAccepted} 
           accept={{ 'application/pdf': ['.pdf'] }}
-          maxSize={10 * 1024 * 1024} 
-          maxFiles={1}
+          multiple={false}
         />
       </div>
     );

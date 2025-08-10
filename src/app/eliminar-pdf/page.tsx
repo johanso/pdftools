@@ -18,10 +18,8 @@ export const metadata: Metadata = {
   },
 };
 
-// 2. Este es el componente de la página
 export default function EliminarPdfPage() {
   return (
-    // Renderizamos el layout estático que los bots de Google verán
     <main className="max-w-screen-xl mx-auto p-6">
 
       <div className="mx-auto text-center mb-16 mt-24">

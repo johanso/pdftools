@@ -1,28 +1,32 @@
 // src/app/api/generate-thumbnails/route.ts
 import { NextResponse } from 'next/server';
-import { generatePdfThumbnails } from '../../../lib/pdf-processor';
+const { generatePdfThumbnails } = require('../../../lib/pdf-processor.js');
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
 
-    if (!file) {
+    if (!file || typeof file.arrayBuffer !== 'function') {
       return NextResponse.json(
-        { error: 'No se proporcionó ningún archivo' },
+        { error: 'No se proporcionó un archivo válido.' },
         { status: 400 }
       );
     }
-
+    
+    // 1. Extraemos el buffer aquí.
     const arrayBuffer = await file.arrayBuffer();
-    const result = await generatePdfThumbnails(Buffer.from(arrayBuffer));
+    
+    // 2. Pasamos el buffer (como Uint8Array) al procesador.
+    const result = await generatePdfThumbnails(new Uint8Array(arrayBuffer));
 
     return NextResponse.json({
+      success: true,
       ...result,
     });
 
   } catch (error: any) {
-    console.error('Error en la API Route:', error);
+    console.error('Error en la API Route (generate-thumbnails):', error);
     return NextResponse.json(
       { 
         success: false,

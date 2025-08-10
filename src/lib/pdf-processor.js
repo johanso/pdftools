@@ -2,59 +2,22 @@
 const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
 const { createCanvas } = require('canvas');
 
-console.log(pdfjsLib);
-
-// Configuración específica para Node.js
-if (typeof window === 'undefined') {
-  // Mock de Web Worker
-  global.Worker = class MockWorker {
-    constructor() {
-      this.onmessage = () => {};
-      this.postMessage = () => {};
-      this.terminate = () => {};
-    }
-  };
-
-  // Mock de MessageChannel
-  global.MessageChannel = class {
-    constructor() {
-      this.port1 = {
-        postMessage: () => {},
-        onmessage: () => {}
-      };
-      this.port2 = {
-        postMessage: () => {},
-        onmessage: () => {}
-      };
-    }
-  };
-}
-
-// Configuración global de PDF.js
-pdfjsLib.GlobalWorkerOptions.workerSrc = false;
-
-async function generatePdfThumbnails(fileBuffer) {
+// La función ahora espera directamente el buffer de datos.
+async function generatePdfThumbnails(fileBuffer) { // fileBuffer es un Uint8Array
   try {
     console.log('Iniciando procesamiento de PDF...');
     
+    // Usamos el buffer directamente. No hay que extraer nada.
     const pdf = await pdfjsLib.getDocument({
       data: fileBuffer,
-      useSystemFonts: true,
-      disableFontFace: true,
-      disableRange: true,
-      disableStream: true,
-      useWorkerFetch: false,
-      isEvalSupported: false,
-      disableCreateObjectURL: true,
-      disableAutoFetch: true,
       disableWorker: true,
-      verbosity: 0
+      useSystemFonts: true,
     }).promise;
 
     console.log(`PDF cargado. Número de páginas: ${pdf.numPages}`);
     const thumbnails = [];
     const SCALE = 1.0;
-    const MAX_PAGES = 100;
+    const MAX_PAGES = 10;
 
     for (let i = 1; i <= Math.min(pdf.numPages, MAX_PAGES); i++) {
       console.log(`Procesando página ${i}...`);
@@ -62,24 +25,18 @@ async function generatePdfThumbnails(fileBuffer) {
       const viewport = page.getViewport({ scale: SCALE });
       const canvas = createCanvas(viewport.width, viewport.height);
       const context = canvas.getContext('2d');
-
-      context.fillStyle = '#FFFFFF';
-      context.fillRect(0, 0, canvas.width, canvas.height);
       
       await page.render({
         canvasContext: context,
         viewport: viewport,
-        background: 'rgba(0,0,0,0)',
-        enableWebGL: false,
-        renderInteractiveForms: false,
+        background: 'rgba(255, 255, 255, 1)', // Fondo blanco
       }).promise;
 
-      thumbnails.push(canvas.toDataURL('image/png'));
+      thumbnails.push(canvas.toDataURL('image/jpeg', 0.8));
       console.log(`Página ${i} procesada.`);
     }
 
     return {
-      success: true,
       thumbnails,
       pageCount: pdf.numPages,
       processedPages: Math.min(pdf.numPages, MAX_PAGES)

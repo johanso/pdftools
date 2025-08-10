@@ -2,74 +2,59 @@
 
 import * as React from 'react';
 import { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone, FileRejection } from 'react-dropzone';
 import { cn } from '@/lib/utils';
 
-type FileWithPreview = File & {
-  preview: string;
-};
-
 interface DropzoneProps extends React.HTMLAttributes<HTMLDivElement> {
-  onFileAccepted?: (file: File) => void;
+  onFileAccepted?: (files: File[]) => void;
   accept?: Record<string, string[]>;
   maxSize?: number;
-  maxFiles?: number;
+  multiple?: boolean;
 }
 
 export function Dropzone({
   className,
   onFileAccepted,
-  accept = {
-    'application/pdf': ['.pdf'],
-  },
-  maxSize = 10 * 1024 * 1024, // 10MB
-  maxFiles = 1,
+  multiple = false,
+  accept = { 'application/pdf': ['.pdf'] },
+  maxSize = 10 * 1024 * 1024,
+  children,
   ...props
 }: DropzoneProps) {
-  const [file, setFile] = useState<FileWithPreview | null>(null);
+  const [previewFiles, setPreviewFiles] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const onDrop = useCallback((acceptedFiles: File[], fileRejections: any[]) => {
-    setError(null);
-    
-    if (fileRejections.length > 0) {
-      const rejection = fileRejections[0];
-      if (rejection.errors[0].code === 'file-too-large') {
-        setError('El archivo es demasiado grande. Tamaño máximo: 5MB');
-      } else if (rejection.errors[0].code === 'file-invalid-type') {
-        setError('Solo se permiten archivos PDF');
-      } else {
-        setError('Error al cargar el archivo');
-      }
-      return;
-    }
+  const onDrop = useCallback(
+    (acceptedFiles: File[], fileRejections: FileRejection[]) => {
+      setError(null);
+      setPreviewFiles([]);
 
-    const acceptedFile = acceptedFiles[0];
-    if (acceptedFile) {
-      const fileWithPreview = Object.assign(acceptedFile, {
-        preview: URL.createObjectURL(acceptedFile),
-      });
-      setFile(fileWithPreview);
-      onFileAccepted?.(acceptedFile);
-    }
-  }, [onFileAccepted]);
+      if (!multiple && fileRejections.length > 1) {
+        const rejection = fileRejections[0];
+        if (rejection.errors[0].code === 'file-too-large') {
+          setError(`El archivo es demasiado grande. Máximo: ${maxSize / 1024 / 1024}MB`);
+        } else if (rejection.errors[0].code === 'file-invalid-type') {
+          setError('Tipo de archivo no válido. Solo se permiten PDFs.');
+        } else {
+          setError('Error al cargar el archivo.');
+        }
+        return;
+      }
+
+      if (acceptedFiles.length > 0) {
+        setPreviewFiles(acceptedFiles);
+        onFileAccepted?.(acceptedFiles);
+      }
+    },
+    [onFileAccepted, maxSize, multiple]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept,
     maxSize,
-    maxFiles,
-    multiple: maxFiles > 1,
+    multiple, // La clave para permitir uno o varios.
   });
-
-  React.useEffect(() => {
-    // Make sure to revoke the data uris to avoid memory leaks
-    return () => {
-      if (file?.preview) {
-        URL.revokeObjectURL(file.preview);
-      }
-    };
-  }, [file]);
 
   return (
     <div className="w-full">
@@ -83,38 +68,46 @@ export function Dropzone({
         {...props}
       >
         <input {...getInputProps()} />
-        <div className="space-y-2">
-          <div className="flex justify-center">
+        
+        {/* Si el Dropzone tiene hijos (como un botón), los renderiza. */}
+        {children ? (
+          children
+        ) : (
+          // Si no, muestra el contenido por defecto.
+          <div className="space-y-2">
+            <div className="flex justify-center">
             <svg
-              className="w-12 h-12 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-              />
-            </svg>
-          </div>
-          {file ? (
-            <p className="text-sm text-gray-600">
-              Archivo seleccionado: <span className="font-medium">{file.name}</span>
-            </p>
-          ) : (
-            <>
+                className="w-12 h-12 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+            </div>
+            {previewFiles.length > 0 ? (
               <p className="text-sm text-gray-600">
-                <span className="font-medium text-blue-600 hover:text-blue-500">Sube un archivo</span> o arrástralo aquí
+                <span className="font-medium">{previewFiles[0].name}</span>
+                {previewFiles.length > 1 && ` y ${previewFiles.length - 1} más`}
               </p>
-              <p className="text-xs text-gray-500">
-                PDF (hasta 5MB)
-              </p>
-            </>
-          )}
-        </div>
+            ) : (
+              <>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium text-blue-600 hover:text-blue-500">Sube archivos</span> o arrástralos aquí
+                </p>
+                <p className="text-xs text-gray-500">
+                  PDF (hasta {maxSize / 1024 / 1024}MB)
+                </p>
+              </>
+            )}
+          </div>
+        )}
       </div>
       {error && (
         <p className="mt-2 text-sm text-red-600 text-center">{error}</p>
