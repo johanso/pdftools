@@ -2,6 +2,16 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Dropzone } from '@/components/pdf-upload/dropzone';
 import { Button } from '@/components/ui/button';
 import { Combine, Files, Plus } from 'lucide-react';
@@ -13,6 +23,8 @@ import DraggableFileGrid, { PdfFileWithPreview } from '../pdf-upload/draggableFi
 export default function MergePdfClient() {
   const { isProcessing, openMergeDialog } = usePdfActions();
   const [files, setFiles] = useState<PdfFileWithPreview[]>([]);
+  const [fileToDeleteId, setFileToDeleteId] = useState<string | null>(null);
+
 
   const totalSize = files.reduce((acc, file) => acc + file.size, 0);
   const totalFiles = files.length;
@@ -98,8 +110,12 @@ export default function MergePdfClient() {
     });
   }, [generateThumbnailForFile]);
 
-  const handleRemoveFile = (idToRemove: string) => {
+  const confirmRemoveFile = (idToRemove: string) => {
     setFiles(prev => prev.filter(file => file.id !== idToRemove));
+  };
+
+  const promptRemoveFile = (id: string) => {
+    setFileToDeleteId(id);
   };
 
   const handleReorderFiles = (reorderedFiles: PdfFileWithPreview[]) => {
@@ -142,15 +158,15 @@ export default function MergePdfClient() {
       <div className="space-y-2 text-sm text-gray-700">
         <div className="flex justify-between">
           <span className="font-medium text-gray-500">Archivos a unir:</span>
-          <span className="font-bold">{totalFiles}</span>
+          <span className="text-gray-700">{totalFiles}</span>
         </div>
         <div className="flex justify-between">
           <span className="font-medium text-gray-500">Tamaño total:</span>
-          <span>{formatFileSize(totalSize)}</span>
+          <span className="text-gray-700">{formatFileSize(totalSize)}</span>
         </div>
         <div className="flex justify-between">
           <span className="font-medium text-gray-500">Páginas totales:</span>
-          <span className="text-gray-400 italic">
+          <span className="text-gray-700">
             {isAnyFileLoading ? (
               <>Calculando...</>
             ) : (
@@ -171,29 +187,61 @@ export default function MergePdfClient() {
   }
 
   return (
-    <div className="grid md:grid-cols-6 gap-8">
-      <section className="col-span-4 rounded-lg mb-20 relative">
-        
-        <DraggableFileGrid 
-          files={files} 
-          onRemoveFile={handleRemoveFile} 
-          onReorderFiles={handleReorderFiles} 
+    <>
+      <div className="grid md:grid-cols-6 gap-8">
+        <section className="col-span-4 rounded-lg mb-20 relative">
+          
+          <DraggableFileGrid 
+            files={files} 
+            onRemoveFile={promptRemoveFile} 
+            onReorderFiles={handleReorderFiles} 
+          />
+
+          <div className="mt-8 flex items-center justify-center">
+            <Dropzone onFileAccepted={handleFilesAccepted} multiple>
+              <Plus className="h-6 w-6 mx-auto"/>
+              <div className="text-center text-sm text-gray-600">Añadir más archivos</div>
+            </Dropzone>
+          </div>
+        </section>
+
+        <ToolSidebar
+          documentDetails={mergeDocumentDetails}
+          toolInfoSection={mergeToolInfo}
+          actionButton={mergeActionButton}
+          actionDescription="Los archivos se combinarán en el orden mostrado."
         />
+      </div>
 
-        <div className="mt-8 flex items-center justify-center">
-          <Dropzone onFileAccepted={handleFilesAccepted} multiple>
-            <Plus className="h-6 w-6 mx-auto"/>
-            <div className="text-center text-sm text-gray-600">Añadir más archivos</div>
-          </Dropzone>
-        </div>
-      </section>
-
-      <ToolSidebar
-        documentDetails={mergeDocumentDetails}
-        toolInfoSection={mergeToolInfo}
-        actionButton={mergeActionButton}
-        actionDescription="Los archivos se combinarán en el orden mostrado."
-      />
-    </div>
+      <AlertDialog
+      open={!!fileToDeleteId}
+      onOpenChange={(isOpen) => !isOpen && setFileToDeleteId(null)}
+      >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Esta acción es irreversible. El archivo será eliminado de la lista
+            para unir.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={() => setFileToDeleteId(null)}>
+            Cancelar
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              if (fileToDeleteId) {
+                confirmRemoveFile(fileToDeleteId);
+              }
+              setFileToDeleteId(null);
+            }}
+          >
+            Sí, eliminar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
