@@ -48,11 +48,11 @@ export default function ToolSidebar({
             <>
               <div className="space-y-2 text-sm text-gray-700">
                 <h3 className="flex font-semibold text-lg items-center gap-2 mb-3">
-                  <FileIcon className="h-5 w-5" />
+                  <FileIcon className="h-5 w-5 text-black" />
                   Detalles del Documento
                 </h3>
                 <div className="flex justify-between">
-                  <span className="text-gray-700">Nombre:</span>
+                  <span className="text-black">Nombre:</span>
                   <span className="truncate max-w-[150px]" title={currentFile?.name}>
                     {currentFile?.name}
                   </span>

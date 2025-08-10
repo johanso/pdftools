@@ -1,19 +1,19 @@
 // src/components/pdf-upload/PdfThumbnails.tsx
 'use client';
 
-import { useEffect, useState, ReactNode } from 'react';
+import { useEffect, useState, ReactNode, CSSProperties } from 'react';
 import { usePdf } from '@/app/contexts/PdfContext';
 import Loader from '../shared/Loader';
 
-// 1. Definimos el tipo para la nueva prop
 type RenderActionFunc = (pageNumber: number) => ReactNode;
+type GetPageStyleFunc = (pageNumber: number) =>  CSSProperties | undefined;
 
 interface PdfThumbnailsProps {
-  // 2. Hacemos que la prop sea opcional
   renderAction?: RenderActionFunc;
+  getPageStyle?: GetPageStyleFunc;
 }
 
-export default function PdfThumbnails({ renderAction }: PdfThumbnailsProps) {
+export default function PdfThumbnails({ renderAction, getPageStyle }: PdfThumbnailsProps) {
   const { currentFile, setPageCount, pdfIsLoading, setPdfIsLoading, } = usePdf();
   const [error, setError] = useState<string | null>(null);
   const [localPages, setLocalPages] = useState<{ pageNumber: number, imageUrl: string }[]>([]);
@@ -68,14 +68,17 @@ export default function PdfThumbnails({ renderAction }: PdfThumbnailsProps) {
   return (
     <div className="grid grid-cols-3 md:grid-cols-4 gap-4 p-4">
       {localPages.map((page) => (
-        // 3. Cada miniatura es un contenedor relativo
-        <div key={page.pageNumber} className="relative flex flex-col border border-gray-200 rounded-lg overflow-hidden transition-all hover:scale-102">
+        <div 
+          key={page.pageNumber} 
+          className="relative flex flex-col border border-gray-200 rounded-lg overflow-hidden transition-all hover:scale-102"
+        >
           <img
             src={page.imageUrl}
             alt={`Página ${page.pageNumber}`}
-            className="w-full h-auto max-h-[200px] object-contain bg-white"
+            className="w-full h-auto max-h-[200px] object-contain object-center bg-white transition-transform duration-200 ease-in-out"
+            style={getPageStyle?.(page.pageNumber)}
           />
-          <div className="p-2 bg-white text-center text-xs text-gray-500 border-t border-gray-200">
+          <div className="p-2 bg-white text-center text-xs text-gray-500 border-t border-gray-200 mt-auto">
             Página {page.pageNumber}
           </div>
           

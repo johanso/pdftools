@@ -21,7 +21,7 @@ interface ToolHeaderProps {
 
 export default function ToolHeader({ title, actions = [] }: ToolHeaderProps) {
   return (
-    <div className="sticky top-0 z-10 flex items-center justify-between bg-white px-0 py-2 rounded-t-lg border-b border-gray-200">
+    <div className="sticky top-0 z-10 flex items-center justify-between bg-white px-0 py-2 ps-3 rounded-t-lg border">
       {title && <h3 className="text-sm font-semibold text-gray-700">{title}</h3>}
       
       <div className="flex items-center">

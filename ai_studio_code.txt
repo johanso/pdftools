@@ -10,8 +10,10 @@ pdftools/
 │   │   │   │   └── route.ts        # API para eliminar páginas
 │   │   │   ├── generate-thumbnails/
 │   │   │   │   └── route.ts        # API UNIFICADA para generar miniaturas
-│   │   │   └── merge-pdfs/
-│   │   │       └── route.ts        # API para unir PDFs
+│   │   │   ├── merge-pdfs/
+│   │   │   │   └── route.ts        # API para unir PDFs
+│   │   │   ├── modify-pages/
+│   │   │   │   └── route.ts        # API para modificar PDFs
 │   │   │
 │   │   ├── contexts/
 │   │   │   ├── DownloadDialogContext.tsx
@@ -21,6 +23,9 @@ pdftools/
 │   │   │   └── page.tsx            # Página (Server Component) para SEO
 │   │   │
 │   │   ├── unir-pdf/
+│   │   │   └── page.tsx            # Página (Server Component) para SEO
+│   │   │
+│   │   ├── rotar-pdf/
 │   │   │   └── page.tsx            # Página (Server Component) para SEO
 │   │   │
 │   │   ├── globals.css
@@ -37,6 +42,9 @@ pdftools/
 │   │   ├── pdf-upload/
 │   │   │   ├── dropzone.tsx
 │   │   │   └── PdfThumbnails.tsx
+│   │   │
+│   │   ├── pdf-rotator/
+│   │   │   └── RotatePdfClient.tsx   # Componente cliente para "Rotar"
 │   │   │
 │   │   ├── shared/
 │   │   │   ├── DownloadDialog.tsx

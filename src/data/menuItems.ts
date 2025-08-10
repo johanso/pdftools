@@ -8,4 +8,8 @@ export const menuItems = [
     title: "Unir PDFs",
     href: "/unir-pdf",
   },
+  {
+    title: "Rotar PDFs",
+    href: "/rotar-pdf",
+  },
 ];

@@ -4,6 +4,13 @@
 import { useState } from 'react';
 import { useDownloadDialog } from '@/app/contexts/DownloadDialogContext';
 
+type PageModification = { 
+  pageNumber: number; 
+  rotation?: number; 
+  delete?: boolean; 
+};
+
+
 export function usePdfActions() {
   const [isProcessing, setIsProcessing] = useState(false);
   const { openDialog } = useDownloadDialog();
@@ -59,6 +66,26 @@ export function usePdfActions() {
     }
   };
 
+  // Nueva acción para MODIFICAR páginas
+  const processModify = async (file: File, modifications: PageModification[], fileName: string) => {
+    setIsProcessing(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('modifications', JSON.stringify(modifications));
+    
+    try {
+      const response = await fetch('/api/modify-pages', { method: 'POST', body: formData });
+      if (!response.ok) throw new Error('Error del servidor al modificar páginas.');
+      const blob = await response.blob();
+      handleBlobDownload(blob, fileName);
+    } catch (error) {
+      console.error('Error en processModify:', error);
+      alert('Ocurrió un error al modificar las páginas.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
 
   return {
     isProcessing,
@@ -69,6 +96,10 @@ export function usePdfActions() {
     openMergeDialog: (files: File[]) => {
       if (files.length < 2) return;
       openDialog((fileName) => processMerge(files, fileName), 'documento_unido');
+    },
+    openModifyDialog: (file: File, modifications: PageModification[]) => {
+      if (!file || modifications.length === 0) return;
+      openDialog((fileName) => processModify(file, modifications, fileName), 'documento_rotado');
     },
   };
 }

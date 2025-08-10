@@ -123,13 +123,12 @@ export default function DeletePdfClient() {
 
   return (
     <div className="grid md:grid-cols-6 gap-8">
+      
       <section className="col-span-4 bg-gray-50 rounded-lg mb-20 relative">
-        
         <ToolHeader 
           title={`${selectedPages.size} / ${pageCount} seleccionadas`}
           actions={toolbarActions} 
         />
-
         <PdfThumbnails 
           renderAction={renderCheckboxAction} 
         /> 
