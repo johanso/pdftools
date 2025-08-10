@@ -1,7 +1,7 @@
 // src/components/pdf-merger/MergePdfClient.tsx
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,138 +18,54 @@ import { AArrowDown, AArrowUp, ArrowLeft, Combine, Files, Plus } from 'lucide-re
 import ToolSidebar from '@/components/shared/ToolSidebar';
 import { formatFileSize } from '@/lib/utils';
 import { usePdfActions } from '@/app/hooks/usePdfActions';
-import DraggableFileGrid, { PdfFileWithPreview } from '../pdf-upload/draggableFileGrid';
-import ToolHeader, { ActionConfig } from '../shared/ToolHeader';
-import { usePdf } from '@/app/contexts/PdfContext';
+import { useFileProcessor } from '@/app/hooks/useFileProcessor';
+import ToolHeader, { ActionConfig } from '@/components/shared/ToolHeader';
+import DraggableFileGrid from '@/components/pdf-upload/draggableFileGrid';
 
 export default function MergePdfClient() {
-  const { clearPdf } = usePdf();
   const { isProcessing, openMergeDialog } = usePdfActions();
-  const [files, setFiles] = useState<PdfFileWithPreview[]>([]);
+  const { files, addFiles, removeFile, reorderFiles, clearFiles } = useFileProcessor();
+
   const [fileToDeleteId, setFileToDeleteId] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); 
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  const confirmRemoveFile = () => {
+    if (fileToDeleteId) {
+      removeFile(fileToDeleteId);
+    }
+    setFileToDeleteId(null);
+  };
+  const promptRemoveFile = (id: string) => setFileToDeleteId(id);
+
+  const handleSort = () => {
+    const sortedFiles = [...files].sort((a, b) => {
+      return sortOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+    });
+    reorderFiles(sortedFiles);
+    setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
+  };
+
+  const handleMergeClick = () => openMergeDialog(files);
 
   const totalSize = files.reduce((acc, file) => acc + file.size, 0);
   const totalFiles = files.length;
   const totalPages = files.reduce((acc, file) => acc + (file.pageCount || 0), 0);
   const isAnyFileLoading = files.some(file => file.isLoading);
-
-  const generateThumbnailForFile = useCallback(async (file: File): Promise<Partial<PdfFileWithPreview>> => {
-    // Basic validation
-    if (!file || !(file instanceof File) || file.size === 0) {
-      console.error('Archivo no válido o vacío');
-      return { isLoading: false };
-    }
-  
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    try {
-      const response = await fetch('/api/generate-first-page-thumbnail', {
-        method: 'POST',
-        body: formData,
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Error al generar la miniatura');
-      }
-      
-      const data = await response.json();
-      return { 
-        thumbnailUrl: data.thumbnailUrl, 
-        pageCount: data.pageCount,
-        isLoading: false,
-      };
-    } catch (error) {
-      console.error(`Error generando miniatura para ${file.name}:`, error);
-      return { 
-        isLoading: false,
-      };
-    }
-  }, []);
-
-  const handleFilesAccepted = useCallback((acceptedFiles: File[]) => {
-    // Create new files with the required properties
-    const newFiles = acceptedFiles.map(file => {
-      // Create a new File object to ensure we have a clean instance
-      const newFile = new File([file], file.name, { 
-        type: file.type,
-        lastModified: file.lastModified 
-      });
-      
-      // Add our custom properties
-      return Object.assign(newFile, {
-        id: `${file.name}-${file.lastModified}-${Math.random()}`,
-        isLoading: true,
-        pageCount: 0,
-        thumbnailUrl: undefined as string | undefined
-      }) as PdfFileWithPreview;
-    });
-  
-    // Update state with new files
-    setFiles(prev => [...prev, ...newFiles]);
-  
-    // Generate thumbnails in the background
-    newFiles.forEach(async (newFile) => {
-      try {
-        const previewData = await generateThumbnailForFile(newFile);
-        setFiles(prevFiles => 
-          prevFiles.map(f => {
-            if (f.id === newFile.id) {
-              return Object.assign(f, previewData);
-            }
-            return f;
-          })
-        );
-      } catch (error) {
-        console.error(`Error generando thumbnail para ${newFile.name}:`, error);
-        setFiles(prevFiles => 
-          prevFiles.map(f => 
-            f.id === newFile.id ? Object.assign(f, { isLoading: false }) : f
-          )
-        );
-      }
-    });
-  }, [generateThumbnailForFile]);
-
-  const confirmRemoveFile = (idToRemove: string) => {
-    setFiles(prev => prev.filter(file => file.id !== idToRemove));
-  };
-
-  const promptRemoveFile = (id: string) => {
-    setFileToDeleteId(id);
-  };
-
-  const handleReorderFiles = (reorderedFiles: PdfFileWithPreview[]) => {
-    setFiles(reorderedFiles);
-  };
-
-  const handleMergeClick = async () => {
-    if (files.length < 2) {
-      alert('Necesitas al menos dos archivos para unir.');
-      return;
-    }
-    openMergeDialog(files);
-  };
-
-  const handleSort = () => {
-    const sortedFiles = [...files].sort((a, b) => {
-      if (sortOrder === 'asc') {
-        return a.name.localeCompare(b.name);
-      } else {
-        return b.name.localeCompare(a.name);
-      }
-    });
-
-    setFiles(sortedFiles); 
-    setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc')); 
-  };
-
-  const handleClearAll = () => {
-    setFiles([]); 
-    clearPdf();   
-  };
+  const toolbarActions: ActionConfig[] = [
+    {
+      id: 'upload-new',
+      icon: <ArrowLeft style={{ width: '22px', height: '22px' }} />,
+      tooltip: 'Empezar de nuevo',
+      onClick: clearFiles,
+    },
+    {
+      id: 'sort-alpha',
+      icon: sortOrder === 'asc' ? <AArrowUp style={{ width: '26px', height: '26px' }} /> : <AArrowDown style={{ width: '26px', height: '26px' }} />,
+      tooltip: `Ordenar ${sortOrder === 'asc' ? 'A-Z' : 'Z-A'}`,
+      onClick: handleSort,
+      disabled: files.length < 2,
+    },
+  ];
 
   const mergeToolInfo = (
     <div className="text-sm border-t pt-4">
@@ -198,50 +114,28 @@ export default function MergePdfClient() {
   if (files.length === 0) {
     return (
       <div className="max-w-xl mx-auto">
-        <Dropzone onFileAccepted={handleFilesAccepted} multiple />
+        <Dropzone onFileAccepted={addFiles} multiple />
       </div>
     );
   }
 
-  const toolbarActions: ActionConfig[] = [
-    {
-      id: 'upload-new',
-      icon: <ArrowLeft style={{ width: '22px', height: '22px' }} />,
-      tooltip: 'Regresar',
-      onClick: handleClearAll,
-    },
-    {
-      id: 'sort-alpha',
-      icon: sortOrder === 'asc' ? 
-        <AArrowUp style={{ width: '26px', height: '26px' }} /> : 
-        <AArrowDown style={{ width: '26px', height: '26px' }} />,
-      tooltip: `Ordenar ${sortOrder === 'asc' ? 'A-Z' : 'Z-A'}`,
-      onClick: handleSort,
-      disabled: files.length < 2,
-    },
-  ];
-
   return (
     <>
       <div className="grid md:grid-cols-6 gap-8">
-        <section className="col-span-4 rounded-lg mb-20 relative">
-
-          <ToolHeader 
-            title={`Archivos a unir: ${totalFiles}`}
-            actions={toolbarActions} 
-          />
-          
-          <DraggableFileGrid 
-            files={files} 
-            onRemoveFile={promptRemoveFile} 
-            onReorderFiles={handleReorderFiles} 
-          />
-
-          <div className="mt-8 flex items-center justify-center">
-            <Dropzone onFileAccepted={handleFilesAccepted} multiple>
-              <Plus className="h-6 w-6 mx-auto"/>
-              <div className="text-center text-sm text-gray-600">Añadir más archivos</div>
-            </Dropzone>
+        <section className="col-span-4 rounded-lg">
+          <ToolHeader title={`Archivos a unir: ${totalFiles}`} actions={toolbarActions} />
+          <div className="p-4 bg-gray-50 border-x border-b rounded-b-lg">
+            <DraggableFileGrid 
+              files={files} 
+              onRemoveFile={promptRemoveFile} 
+              onReorderFiles={reorderFiles} 
+            />
+            <div className="mt-8">
+              <Dropzone onFileAccepted={addFiles} multiple>
+                <Plus className="h-6 w-6 mx-auto"/>
+                <div className="text-center text-sm text-gray-600">Añadir más archivos</div>
+              </Dropzone>
+            </div>
           </div>
         </section>
 
@@ -253,34 +147,19 @@ export default function MergePdfClient() {
         />
       </div>
 
-      <AlertDialog
-      open={!!fileToDeleteId}
-      onOpenChange={(isOpen) => !isOpen && setFileToDeleteId(null)}
-      >
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Esta acción es irreversible. El archivo será eliminado de la lista
-            para unir.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => setFileToDeleteId(null)}>
-            Cancelar
-          </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={() => {
-              if (fileToDeleteId) {
-                confirmRemoveFile(fileToDeleteId);
-              }
-              setFileToDeleteId(null);
-            }}
-          >
-            Sí, eliminar
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
+      <AlertDialog open={!!fileToDeleteId} onOpenChange={(isOpen) => !isOpen && setFileToDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción es irreversible. El archivo será eliminado de la lista.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setFileToDeleteId(null)}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveFile}>Sí, eliminar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
       </AlertDialog>
     </>
   );

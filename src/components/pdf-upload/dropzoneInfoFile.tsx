@@ -1,5 +1,4 @@
-import React from 'react';
-
+// src/components/pdf-upload/dropzoneInfoFile.tsx 
 interface DropzoneInfoFileProps {
   uploadedFile: File;
   pageCount: number;

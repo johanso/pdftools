@@ -1,0 +1,78 @@
+pdftools/
+├── .next/
+├── node_modules/
+├── public/
+│   └── (favicon, imágenes, etc.)
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── delete-pages/
+│   │   │   │   └── route.ts        # API para eliminar páginas
+│   │   │   ├── generate-thumbnails/
+│   │   │   │   └── route.ts        # API UNIFICADA para generar miniaturas
+│   │   │   └── merge-pdfs/
+│   │   │       └── route.ts        # API para unir PDFs
+│   │   │
+│   │   ├── contexts/
+│   │   │   ├── DownloadDialogContext.tsx
+│   │   │   └── PdfContext.tsx
+│   │   │
+│   │   ├── eliminar-pdf/
+│   │   │   └── page.tsx            # Página (Server Component) para SEO
+│   │   │
+│   │   ├── unir-pdf/
+│   │   │   └── page.tsx            # Página (Server Component) para SEO
+│   │   │
+│   │   ├── globals.css
+│   │   ├── layout.tsx              # Layout principal (con Providers)
+│   │   └── page.tsx                # Página de inicio (Landing Page)
+│   │
+│   ├── components/
+│   │   ├── pdf-editor/
+│   │   │   └── DeletePdfClient.tsx   # Componente cliente para "Eliminar"
+│   │   │
+│   │   ├── pdf-merger/
+│   │   │   └── MergePdfClient.tsx    # Componente cliente para "Unir"
+│   │   │
+│   │   ├── pdf-upload/
+│   │   │   ├── dropzone.tsx
+│   │   │   └── PdfThumbnails.tsx
+│   │   │
+│   │   ├── shared/
+│   │   │   ├── DownloadDialog.tsx
+│   │   │   ├── DraggableFileGrid.tsx
+│   │   │   ├── Loader.tsx
+│   │   │   ├── SortableFileCard.tsx
+│   │   │   ├── ToolHeader.tsx
+│   │   │   ├── ToolSidebar.tsx
+│   │   │   └── navbar/
+│   │   │       ├── logo.tsx
+│   │   │       ├── Navbar.tsx
+│   │   │       ├── nav-menu.tsx
+│   │   │       └── navigation-sheet.tsx
+│   │   │
+│   │   └── ui/                     # Componentes de shadcn/ui
+│   │       ├── alert-dialog.tsx
+│   │       ├── button.tsx
+│   │       └── (etc...)
+│   │
+│   ├── data/
+│   │   └── menuItems.ts            # Datos para el menú de navegación
+│   │
+│   ├── hooks/
+│   │   ├── useFileProcessor.ts     # Hook para manejar listas de archivos
+│   │   └── usePdfActions.ts        # Hook para las acciones de API (unir, eliminar)
+│   │
+│   ├── lib/
+│   │   ├── pdf-processor.js        # Lógica de backend para procesar PDFs
+│   │   └── utils.ts                # Funciones de utilidad (cn, formatFileSize)
+│   │
+│   └── types/
+│       └── index.ts                # Tipos globales (ej: PdfFileWithPreview)
+│
+├── .gitignore
+├── components.json
+├── next.config.ts
+├── package.json
+├── README.md
+└── tsconfig.json

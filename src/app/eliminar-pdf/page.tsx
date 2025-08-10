@@ -1,5 +1,4 @@
 // src/app/eliminar-pdf/page.tsx
-// ¡¡¡SIN 'use client'!!! Esto ahora es un Server Component.
 
 import type { Metadata } from 'next';
 import DeletePdfClient from '@/components/pdf-editor/DeletePdfClient'; // Importamos el nuevo componente

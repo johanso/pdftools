@@ -1,3 +1,4 @@
+// src/components/shared/navbar/logo.tsx
 export const Logo = () => (
   <svg
     id="logo-7"

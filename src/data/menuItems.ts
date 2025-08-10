@@ -1,4 +1,4 @@
-
+// src/data/menuItems.ts
 export const menuItems = [
   {
     title: "Eliminar Páginas",

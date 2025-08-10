@@ -1,3 +1,4 @@
+// src/components/pdf-editor/DeletePdfClient.tsx
 'use client';
 
 import { useState } from 'react';
@@ -14,17 +15,14 @@ import ToolHeader, { ActionConfig } from '../shared/ToolHeader';
 export default function DeletePdfClient() { 
 
   const { currentFile, pageCount, setCurrentFile, clearPdf } = usePdf();
+  
   const { isProcessing, openDeleteDialog } = usePdfActions();
   const [selectedPages, setSelectedPages] = useState(new Set<number>());
 
   const togglePageSelection = (pageNumber: number) => {
     setSelectedPages(prev => {
       const newSelection = new Set(prev);
-      if (newSelection.has(pageNumber)) {
-        newSelection.delete(pageNumber);
-      } else {
-        newSelection.add(pageNumber);
-      }
+      newSelection.has(pageNumber) ? newSelection.delete(pageNumber) : newSelection.add(pageNumber);
       return newSelection;
     });
   };
@@ -46,11 +44,12 @@ export default function DeletePdfClient() {
       alert('Por favor, selecciona al menos una página para eliminar.');
       return;
     }
-    openDeleteDialog(currentFile, selectedPages); 
+    openDeleteDialog(currentFile, selectedPages);
   };
 
   const handleFileAccepted = (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles.length > 0) {
+      setSelectedPages(new Set()); 
       setCurrentFile(acceptedFiles[0]);
     }
   };
@@ -117,11 +116,7 @@ export default function DeletePdfClient() {
   if (!currentFile) {
     return (
       <div className="max-w-xl mx-auto">
-        <Dropzone 
-          onFileAccepted={handleFileAccepted} 
-          accept={{ 'application/pdf': ['.pdf'] }}
-          multiple={false}
-        />
+        <Dropzone onFileAccepted={handleFileAccepted} multiple={false}/>
       </div>
     );
   }

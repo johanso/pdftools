@@ -1,18 +1,11 @@
-// src/components/shared/DraggableFileGrid.tsx
+// src/components/pdf-upload/sortableFileCard.tsx
 'use client';
 
 import { cn, formatFileSize } from "@/lib/utils";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from '@dnd-kit/utilities';
 import { X, FileText, Loader2 } from "lucide-react";
-
-// El tipo no cambia
-export type PdfFileWithPreview = File & { 
-  id: string;
-  thumbnailUrl?: string;
-  pageCount?: number;
-  isLoading?: boolean;
-};
+import { PdfFileWithPreview } from '@/types';
 
 export function SortableFileCard({ file, onRemoveFile }: { file: PdfFileWithPreview, onRemoveFile: (id: string) => void }) {
   const {

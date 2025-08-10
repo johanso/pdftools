@@ -1,4 +1,4 @@
-// src/components/shared/DraggableFileGrid.tsx
+// src/components/pdf-upload/draggableFileGrid.tsx
 'use client';
 
 import {
@@ -15,20 +15,13 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { SortableFileCard } from './sortableFileCard';
-
-export type PdfFileWithPreview = File & { 
-  id: string;
-  thumbnailUrl?: string;
-  pageCount?: number;
-  isLoading?: boolean;
-};
+import { PdfFileWithPreview } from '@/types';
 
 interface DraggableFileGridProps {
   files: PdfFileWithPreview[];
   onRemoveFile: (id: string) => void;
   onReorderFiles: (files: PdfFileWithPreview[]) => void;
 }
-
 
 export default function DraggableFileGrid({ files, onRemoveFile, onReorderFiles }: DraggableFileGridProps) {
 
