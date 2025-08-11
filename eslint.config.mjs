@@ -38,6 +38,23 @@ export default [
     },
   },
   {
+    files: ["**/*.js"],
+    languageOptions: {
+      parserOptions: {
+        sourceType: "module",
+        ecmaVersion: "latest",
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-var-requires": "off",
+      "no-undef": "off",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
+  {
     files: ["src/lib/pdf-processor.js"],
     languageOptions: {
       globals: {

@@ -1,7 +1,7 @@
 // src/components/shared/DownloadDialog.tsx
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useDownloadDialog } from '@/app/contexts/DownloadDialogContext';
 import {
   Dialog,

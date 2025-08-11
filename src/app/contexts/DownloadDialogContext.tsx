@@ -24,12 +24,10 @@ export function useDownloadDialog() {
 
 export function DownloadDialogProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [defaultFileName, setDefaultFileName] = useState('documento_modificado');
   // Almacenamos la función que realmente hará el trabajo de descarga
   const [downloadFunction, setDownloadFunction] = useState<DownloadFunction | null>(null);
-  const openDialog = (onConfirm: DownloadFunction, _defaultName = 'documento_modificado') => {
+  const openDialog = (onConfirm: DownloadFunction) => {
     setDownloadFunction(() => onConfirm); // Guardamos la función de descarga
-    setDefaultFileName(_defaultName);
     setIsOpen(true);
   };
 
