@@ -42,7 +42,7 @@ export default function DraggableFileGrid({ files, onRemoveFile, onReorderFiles 
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg border min-h-[200px]">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 bg-gray-50 rounded-lg min-h-[200px]">
         <SortableContext items={files.map(f => f.id)} strategy={rectSortingStrategy}>
           {files.map(file => (
             <SortableFileCard key={file.id} file={file} onRemoveFile={onRemoveFile} />

@@ -37,7 +37,7 @@ export function SortableFileCard({ file, onRemoveFile }: { file: PdfFileWithPrev
     >
       <div
         className={cn(
-          "relative flex flex-col border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm h-full",
+          "relative flex flex-col border border-gray-200 rounded-lg overflow-hidden bg-white h-full",
           isDragging && "shadow-xl opacity-80"
         )}
       >

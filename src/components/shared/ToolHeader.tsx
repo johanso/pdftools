@@ -4,6 +4,7 @@
 import { ReactNode } from "react";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "../ui/tooltip";
+import { cn } from "@/lib/utils";
 
 export interface ActionConfig {
   id: string;
@@ -34,7 +35,7 @@ export default function ToolHeader({ title, actions = [] }: ToolHeaderProps) {
                   size="sm"
                   onClick={action.onClick}
                   disabled={action.disabled}
-                  className={action.className}
+                  className={cn(action.className, "hover:bg-transparent")}
                   aria-label={action.tooltip}
                 >
                   {action.icon}
