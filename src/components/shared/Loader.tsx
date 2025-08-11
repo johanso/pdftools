@@ -1,4 +1,6 @@
 // src/components/shared/Loader.tsx
+import React from 'react';
+
 const Loader = ({ text }: { text: string }) => {
   const loaderStyle: React.CSSProperties = {
     '--c': 'no-repeat linear-gradient(black 0 0)',
