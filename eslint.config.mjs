@@ -65,6 +65,7 @@ export default [
     rules: {
       "@typescript-eslint/no-var-requires": "off",
     },
+    ignores: ["src/lib/pdf-processor.js"],
   },
   ...compat.extends("next/core-web-vitals"),
 ];
