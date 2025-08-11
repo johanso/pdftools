@@ -49,7 +49,7 @@ export default function PdfThumbnails({ renderAction, getPageStyle }: PdfThumbna
         
         setLocalPages(newPages);
         setPageCount(data.pageCount || 0);
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         console.error(err);
         setError('No se pudieron generar las vistas previas.');

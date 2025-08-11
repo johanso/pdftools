@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       status: 200,
       headers: { 'Content-Type': 'application/pdf' },
     });
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error al modificar páginas:', error);
     return NextResponse.json({ error: `Error: ${error.message}` }, { status: 500 });

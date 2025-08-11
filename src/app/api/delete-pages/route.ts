@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         'Content-Disposition': `attachment; filename="documento_modificado.pdf"`,
       },
     });
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error al eliminar páginas del PDF:', error);
     return NextResponse.json(

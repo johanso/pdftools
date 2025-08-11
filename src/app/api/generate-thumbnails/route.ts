@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         ...result,
       });
     }
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error en la API Route (generate-thumbnails):', error);
     return NextResponse.json(

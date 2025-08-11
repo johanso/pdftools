@@ -39,7 +39,7 @@ export async function POST(request: Request) {
         'Content-Disposition': `attachment; filename="documento_unido.pdf"`,
       },
     });
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error al unir PDFs:', error);
     return NextResponse.json(
