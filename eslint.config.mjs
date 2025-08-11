@@ -62,7 +62,8 @@ export default [
         ...globals.node,
       },
       parserOptions: {
-        sourceType: 'script',
+        ecmaVersion: 'latest',
+        sourceType: 'module',
       },
     },
     rules: {
