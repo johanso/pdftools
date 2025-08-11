@@ -54,9 +54,9 @@ export async function POST(request: Request) {
       status: 200,
       headers: { 'Content-Type': 'application/pdf' },
     });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error al modificar páginas:', error);
-    return NextResponse.json({ error: `Error: ${error.message}` }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido al modificar las páginas';
+    return NextResponse.json({ error: `Error: ${errorMessage}` }, { status: 500 });
   }
 }

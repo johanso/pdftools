@@ -50,10 +50,10 @@ export default function PdfThumbnails({ renderAction, getPageStyle }: PdfThumbna
         
         setLocalPages(newPages);
         setPageCount(data.pageCount || 0);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        console.error(err);
-        setError('No se pudieron generar las vistas previas.');
+      } catch (error) {
+        console.error('Error generating thumbnails:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        setError(`No se pudieron generar las vistas previas: ${errorMessage}`);
       } finally {
         setPdfIsLoading(false);
       }

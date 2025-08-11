@@ -39,11 +39,11 @@ export async function POST(request: Request) {
         'Content-Disposition': `attachment; filename="documento_unido.pdf"`,
       },
     });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error al unir PDFs:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido al procesar los archivos';
     return NextResponse.json(
-      { error: `Error al procesar los PDFs: ${error.message}` },
+      { error: `Error al procesar los archivos: ${errorMessage}` },
       { status: 500 }
     );
   }

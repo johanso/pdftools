@@ -35,15 +35,11 @@ export async function POST(request: NextRequest) {
         ...result,
       });
     }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error en la API Route (generate-thumbnails):', error);
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido al generar las miniaturas';
     return NextResponse.json(
-      { 
-        success: false,
-        error: 'Error al procesar el PDF',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
-      },
+      { error: `Error al generar las miniaturas: ${errorMessage}` },
       { status: 500 }
     );
   }

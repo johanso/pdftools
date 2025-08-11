@@ -42,11 +42,11 @@ export async function POST(request: Request) {
         'Content-Disposition': `attachment; filename="documento_modificado.pdf"`,
       },
     });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error al eliminar páginas del PDF:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido al procesar el PDF';
     return NextResponse.json(
-      { error: `Error al procesar el PDF: ${error.message}` },
+      { error: `Error al procesar el PDF: ${errorMessage}` },
       { status: 500 }
     );
   }
