@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     // Guardar el PDF fusionado en un buffer
     const mergedPdfBytes = await mergedPdf.save();
 
-    return new Response(mergedPdfBytes, {
+    return new Response(Buffer.from(mergedPdfBytes), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

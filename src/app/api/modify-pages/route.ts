@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
     const newPdfBytes = await pdfDoc.save();
 
-    return new Response(newPdfBytes, {
+    return new Response(Buffer.from(newPdfBytes), {
       status: 200,
       headers: { 'Content-Type': 'application/pdf' },
     });
