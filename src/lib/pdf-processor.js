@@ -1,8 +1,6 @@
 // src/lib/pdf-processor.js
-/* eslint-disable no-var-requires */
-const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
-const { createCanvas } = require('canvas');
-/* eslint-enable no-var-requires */
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.js';
+import { createCanvas } from 'canvas';
 
 async function generatePdfThumbnails(fileBuffer, options = {}) {
 
@@ -45,4 +43,4 @@ async function generatePdfThumbnails(fileBuffer, options = {}) {
   }
 }
 
-module.exports = { generatePdfThumbnails };
+export { generatePdfThumbnails };

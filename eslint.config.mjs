@@ -61,11 +61,17 @@ export default [
       globals: {
         ...globals.node,
       },
+      parserOptions: {
+        sourceType: 'script',
+      },
     },
     rules: {
       "@typescript-eslint/no-var-requires": "off",
-    },
-    ignores: ["src/lib/pdf-processor.js"],
+      "no-var-requires": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off"
+    }
   },
   ...compat.extends("next/core-web-vitals"),
 ];
