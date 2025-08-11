@@ -9,8 +9,10 @@ import { Dropzone } from '@/components/pdf-upload/dropzone';
 export default function PdfUploadContainer() {
   const { currentFile, pageCount, setCurrentFile } = usePdf();
 
-  const handleFileAccepted = (file: File) => {
-    setCurrentFile(file);
+  const handleFileAccepted = (acceptedFiles: File[]) => {
+    if (acceptedFiles && acceptedFiles.length > 0) {
+      setCurrentFile(acceptedFiles[0]);
+    }
   };
 
   if (currentFile) {
@@ -34,6 +36,7 @@ export default function PdfUploadContainer() {
           <Dropzone 
             onFileAccepted={handleFileAccepted}
             className="mb-4"
+            multiple={false}
           />
         </div>
       </div>
