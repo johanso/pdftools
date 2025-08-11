@@ -6,6 +6,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from '@dnd-kit/utilities';
 import { X, FileText, Loader2 } from "lucide-react";
 import { PdfFileWithPreview } from '@/types';
+import Image from "next/image";
 
 export function SortableFileCard({ file, onRemoveFile }: { file: PdfFileWithPreview, onRemoveFile: (id: string) => void }) {
   const {
@@ -58,10 +59,12 @@ export function SortableFileCard({ file, onRemoveFile }: { file: PdfFileWithPrev
               <span className="text-xs text-gray-500">Generando...</span>
             </div>
           ) : file.thumbnailUrl ? (
-            <img 
+            <Image 
               src={file.thumbnailUrl} 
               alt={`Vista de ${file.name}`} 
               className="w-full h-auto object-contain max-h-[200px] bg-white pointer-events-none"
+              width={500}
+              height={500}
             />
           ) : (
             <div className="flex flex-col items-center justify-center text-gray-400">

@@ -4,6 +4,7 @@
 import { useEffect, useState, ReactNode, CSSProperties } from 'react';
 import { usePdf } from '@/app/contexts/PdfContext';
 import Loader from '../shared/Loader';
+import Image from 'next/image';
 
 type RenderActionFunc = (pageNumber: number) => ReactNode;
 type GetPageStyleFunc = (pageNumber: number) =>  CSSProperties | undefined;
@@ -72,11 +73,13 @@ export default function PdfThumbnails({ renderAction, getPageStyle }: PdfThumbna
           key={page.pageNumber} 
           className="relative flex flex-col border border-gray-200 rounded-lg overflow-hidden transition-all hover:scale-102"
         >
-          <img
+          <Image
             src={page.imageUrl}
             alt={`Página ${page.pageNumber}`}
             className="w-full h-auto max-h-[200px] object-contain object-center bg-white transition-transform duration-200 ease-in-out"
             style={getPageStyle?.(page.pageNumber)}
+            width={500}
+            height={500}
           />
           <div className="p-2 bg-white text-center text-xs text-gray-500 border-t border-gray-200 mt-auto">
             Página {page.pageNumber}
