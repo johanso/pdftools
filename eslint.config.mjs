@@ -1,79 +1,29 @@
 // eslint.config.mjs
+
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 import globals from "globals";
-import js from "@eslint/js";
-import tsParser from "@typescript-eslint/parser";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
 const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
+// Exportamos un array de configuraciones.
 export default [
-  js.configs.recommended,
-  {
-    files: ["**/*.ts", "**/*.tsx"],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-        project: "./tsconfig.json",
-      },
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
-    },
-    plugins: {
-      "@typescript-eslint": tsPlugin,
-    },
-    rules: {
-      ...tsPlugin.configs.recommended.rules,
-      "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-expressions": "off",
-    },
-  },
-  {
-    files: ["**/*.js"],
-    languageOptions: {
-      parserOptions: {
-        sourceType: "module",
-        ecmaVersion: "latest",
-      },
-    },
-    rules: {
-      "@typescript-eslint/no-var-requires": "off",
-      "no-undef": "off",
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": "off",
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-    },
-  },
-  {
-    files: ["src/lib/pdf-processor.js"],
-    languageOptions: {
-      globals: {
-        ...globals.node,
-      },
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-      },
-    },
-    rules: {
-      "@typescript-eslint/no-var-requires": "off",
-      "no-var-requires": "off",
-      "@typescript-eslint/no-unsafe-assignment": "off",
-      "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-unsafe-member-access": "off"
-    },
-    ignores: ["src/lib/pdf.worker.min.js"]
-  },
+  // 1. La configuración base de Next.js.
   ...compat.extends("next/core-web-vitals"),
+
+  // 2. Un objeto de configuración para ignorar archivos.
+  //    Esto le dice a ESLint que NUNCA analice estos archivos.
+  {
+    ignores: [
+      "src/lib/pdf-processor.js", 
+      "src/lib/pdf.worker.js", 
+      "src/lib/pdf.worker.min.js"
+    ],
+  },
 ];
