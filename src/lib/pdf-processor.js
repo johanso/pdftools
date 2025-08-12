@@ -1,8 +1,12 @@
 // src/lib/pdf-processor.js
 
 // 1. Usamos 'require' para importar las librerías, que es más robusto en el backend.
+const path = require('path');
 const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
 const { createCanvas } = require('@napi-rs/canvas');
+
+const workSrc = path.join(__dirname, 'pdf.worker.js');
+pdfjsLib.GlobalWorkerOptions.workerSrc = workSrc;
 
 // 2. Creamos la 'CanvasFactory' para inyectar nuestra implementación de canvas.
 class NodeCanvasFactory {
