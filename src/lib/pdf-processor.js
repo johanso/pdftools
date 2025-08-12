@@ -26,7 +26,11 @@ class NodeCanvasFactory {
 async function generatePdfThumbnails(fileBuffer, options = {}) {
   const { maxPages = 10 } = options;
   try {
-    const pdf = await pdfjsLib.getDocument({ data: fileBuffer }).promise;
+    const pdf = await pdfjsLib.getDocument({ 
+      data: fileBuffer,
+      disableWorker: true,
+      useSystemFonts: true,
+    }).promise;
 
     const thumbnails = [];
     const SCALE = 1.0;
