@@ -29,7 +29,7 @@ const nextConfig = {
   // experimental: {
   //   serverComponentsExternalPackages: ['canvas', 'pdfjs-dist'],
   // },
-  serverExternalPackages: ['canvas', 'pdfjs-dist', 'pdfjs-dist/build/pdf.worker.js'],
+  serverExternalPackages: ['@napi-rs/canvas', 'pdfjs-dist', 'pdfjs-dist/build/pdf.worker.js'],
   images: {
     disableStaticImages: true,
   },

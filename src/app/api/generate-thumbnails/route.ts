@@ -1,6 +1,6 @@
 // src/app/api/generate-thumbnails/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { generatePdfThumbnails } from '@/lib/pdf-processor.mjs';
+import { generatePdfThumbnails } from '@/lib/pdf-processor.js';
 
 export async function POST(request: NextRequest) {
   try {
