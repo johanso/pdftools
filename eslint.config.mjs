@@ -72,7 +72,8 @@ export default [
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-member-access": "off"
-    }
+    },
+    ignores: ["src/lib/pdf.worker.min.js"]
   },
   ...compat.extends("next/core-web-vitals"),
 ];
