@@ -5,7 +5,7 @@ const path = require('path');
 const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
 const { createCanvas } = require('@napi-rs/canvas');
 
-const workSrc = path.join(__dirname, 'pdf.worker.js');
+const workSrc = path.join(__dirname, 'pdf.worker.min.js');
 pdfjsLib.GlobalWorkerOptions.workerSrc = workSrc;
 
 // 2. Creamos la 'CanvasFactory' para inyectar nuestra implementación de canvas.
